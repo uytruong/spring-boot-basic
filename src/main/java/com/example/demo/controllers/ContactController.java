@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +61,13 @@ public class ContactController {
     }
 
     @PostMapping("/contact")
-    public ResponseEntity<Contact> createContact(@RequestBody Contact contact) {
+    public ResponseEntity<?> createContact(@Valid @RequestBody Contact contact, BindingResult bindingResult) {
+
+        String error = checkBindingResult((bindingResult));
+        if (error != null) {
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+
         try {
             Contact createdContact = contactRepository
                     .save(new Contact(contact.getFirstName(), contact.getLastName(), contact.getEmail(), contact.getPhoneNumber(), contact.getPostalAddress()));
@@ -103,6 +112,19 @@ public class ContactController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String checkBindingResult(BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+            for (FieldError fieldError: bindingResult.getFieldErrors()){
+                errorMsg.append(fieldError.getDefaultMessage());
+            }
+
+            return errorMsg.toString();
+        }
+
+        return null;
     }
 
 }

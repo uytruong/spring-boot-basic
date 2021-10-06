@@ -1,2 +1,6 @@
+com/example/demo/JsonUtil.java
+ com.example.demo.JsonUtil
 com/example/demo/DemoApplicationTests.java
  com.example.demo.DemoApplicationTests
+com/example/demo/ContactControllerIntegrationTest.java
+ com.example.demo.ContactControllerIntegrationTest
