@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,7 +50,7 @@ public class ContactControllerIntegrationTest {
     }
 
     @Test
-    public void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
+    public void givenContacts_whenGetContacts_thenStatus200() throws Exception {
         createTestContact("John", "Doe", "john@john", "0909090909");
         createTestContact("David", "Lang", "david@david", "0908080808");
 
@@ -60,6 +61,15 @@ public class ContactControllerIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
                 .andExpect(jsonPath("$[0].firstName", is("John")))
                 .andExpect(jsonPath("$[1].lastName", is("Lang")));
+    }
+
+    @Test
+    public void givenContacts_whenDeleteContact_thenStatus200() throws Exception {
+        createTestContact("John", "Doe", "john@john", "0909090909");
+
+        mvc.perform(delete("/contact/1").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 
     private void createTestContact(String firstName, String lastName, String email, String phoneNumber) {
